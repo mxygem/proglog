@@ -55,7 +55,6 @@ func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
 func (s *segment) Append(record *api.Record) (offset uint64, err error) {
 	cur := s.nextOffset
 	record.Offset = cur
-
 	p, err := proto.Marshal(record)
 	if err != nil {
 		return 0, err
@@ -71,9 +70,7 @@ func (s *segment) Append(record *api.Record) (offset uint64, err error) {
 	); err != nil {
 		return 0, err
 	}
-
 	s.nextOffset++
-
 	return cur, nil
 }
 
@@ -86,15 +83,24 @@ func (s *segment) Read(off uint64) (*api.Record, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	record := &api.Record{}
-
-	return record, proto.Unmarshal(p, record)
+	err = proto.Unmarshal(p, record)
+	return record, err
 }
 
 func (s *segment) IsMaxed() bool {
 	return s.store.size >= s.config.Segment.MaxStoreBytes ||
 		s.index.size >= s.config.Segment.MaxIndexBytes
+}
+
+func (s *segment) Close() error {
+	if err := s.index.Close(); err != nil {
+		return err
+	}
+	if err := s.store.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *segment) Remove() error {
@@ -110,19 +116,10 @@ func (s *segment) Remove() error {
 	return nil
 }
 
-func (s *segment) Close() error {
-	if err := s.index.Close(); err != nil {
-		return err
-	}
-	if err := s.store.Close(); err != nil {
-		return err
-	}
-	return nil
-}
-
 func nearestMultiple(j, k uint64) uint64 {
 	if j >= 0 {
 		return (j / k) * k
 	}
-	return ((j - k + 1) / k)
+	return ((j - k + 1) / k) * k
+
 }

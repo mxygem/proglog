@@ -2,6 +2,7 @@ package log
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -9,9 +10,10 @@ import (
 )
 
 func TestIndex(t *testing.T) {
-	f, err := os.CreateTemp(os.TempDir(), "index_test")
+	f, err := ioutil.TempFile(os.TempDir(), "index_test")
 	require.NoError(t, err)
 	defer os.Remove(f.Name())
+
 	c := Config{}
 	c.Segment.MaxIndexBytes = 1024
 	idx, err := newIndex(f, c)
@@ -47,7 +49,6 @@ func TestIndex(t *testing.T) {
 	idx, err = newIndex(f, c)
 	require.NoError(t, err)
 	off, pos, err := idx.Read(-1)
-
 	require.NoError(t, err)
 	require.Equal(t, uint32(1), off)
 	require.Equal(t, entries[1].Pos, pos)

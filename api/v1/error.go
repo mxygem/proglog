@@ -2,10 +2,9 @@ package log_v1
 
 import (
 	"fmt"
-	"net/http"
 
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	status "google.golang.org/grpc/status"
+	"google.golang.org/grpc/status"
 )
 
 type ErrOffsetOutOfRange struct {
@@ -14,7 +13,7 @@ type ErrOffsetOutOfRange struct {
 
 func (e ErrOffsetOutOfRange) GRPCStatus() *status.Status {
 	st := status.New(
-		http.StatusNotFound,
+		404,
 		fmt.Sprintf("offset out of range: %d", e.Offset),
 	)
 	msg := fmt.Sprintf(

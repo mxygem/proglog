@@ -1,3 +1,4 @@
+# START: begin
 CONFIG_PATH=${HOME}/.proglog/
 
 .PHONY: init
@@ -41,7 +42,6 @@ gencert:
 
 	mv *.pem *.csr ${CONFIG_PATH}
 
-
 $(CONFIG_PATH)/model.conf:
 	cp test/model.conf $(CONFIG_PATH)/model.conf
 
@@ -49,8 +49,14 @@ $(CONFIG_PATH)/policy.csv:
 	cp test/policy.csv $(CONFIG_PATH)/policy.csv
 
 .PHONY: test
+# END: auth
+test:
+# END: begin
+# START: auth
 test: $(CONFIG_PATH)/policy.csv $(CONFIG_PATH)/model.conf
+#: START: begin
 	go test -race ./...
+# END: auth
 
 .PHONY: compile
 compile:
@@ -60,3 +66,5 @@ compile:
 		--go_opt=paths=source_relative \
 		--go-grpc_opt=paths=source_relative \
 		--proto_path=.
+
+# END: begin

@@ -1,7 +1,6 @@
 package log
 
 import (
-	"io"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -43,9 +42,11 @@ func testAppendRead(t *testing.T, log *Log) {
 	off, err := log.Append(append)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), off)
+
 	read, err := log.Read(off)
 	require.NoError(t, err)
 	require.Equal(t, append.Value, read.Value)
+
 }
 
 func testOutOfRangeErr(t *testing.T, log *Log) {
@@ -59,16 +60,15 @@ func testInitExisting(t *testing.T, o *Log) {
 	append := &api.Record{
 		Value: []byte("hello world"),
 	}
-
 	for i := 0; i < 3; i++ {
 		_, err := o.Append(append)
 		require.NoError(t, err)
 	}
 	require.NoError(t, o.Close())
+
 	off, err := o.LowestOffset()
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), off)
-
 	off, err = o.HighestOffset()
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), off)
@@ -79,7 +79,6 @@ func testInitExisting(t *testing.T, o *Log) {
 	off, err = n.LowestOffset()
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), off)
-
 	off, err = n.HighestOffset()
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), off)
@@ -92,9 +91,9 @@ func testReader(t *testing.T, log *Log) {
 	off, err := log.Append(append)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), off)
-	reader := log.Reader()
 
-	b, err := io.ReadAll(reader)
+	reader := log.Reader()
+	b, err := ioutil.ReadAll(reader)
 	require.NoError(t, err)
 
 	read := &api.Record{}
@@ -107,7 +106,6 @@ func testTruncate(t *testing.T, log *Log) {
 	append := &api.Record{
 		Value: []byte("hello world"),
 	}
-
 	for i := 0; i < 3; i++ {
 		_, err := log.Append(append)
 		require.NoError(t, err)
@@ -115,6 +113,7 @@ func testTruncate(t *testing.T, log *Log) {
 
 	err := log.Truncate(1)
 	require.NoError(t, err)
+
 	_, err = log.Read(0)
 	require.Error(t, err)
 }

@@ -1,5 +1,8 @@
 {
     "signing": {
+        "default": {
+            "expiry": "168h"
+        },
         "profiles": {
             "server": {
                 "expiry": "8760h",

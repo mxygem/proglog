@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package log.v1;
 
-option go_package = "github.com/mxygem/api/log_v1";
+option go_package = "github.com/travisjeffery/api/log_v1";
 
 service Log {
   rpc Produce(ProduceRequest) returns (ProduceResponse) {}
@@ -11,11 +11,11 @@ service Log {
   rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
 }
 
-message ProduceRequest {
+message ProduceRequest  {
   Record record = 1;
 }
 
-message ProduceResponse {
+message ProduceResponse  {
   uint64 offset = 1;
 }
 
@@ -28,6 +28,6 @@ message ConsumeResponse {
 }
 
 message Record {
-  bytes  value  = 1;
+  bytes value = 1;
   uint64 offset = 2;
 }
